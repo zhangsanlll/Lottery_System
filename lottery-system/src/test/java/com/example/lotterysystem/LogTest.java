@@ -1,14 +1,14 @@
 package com.example.lotterysystem;
 
 import org.junit.jupiter.api.Test;
-import org.junit.platform.commons.logging.LoggerFactory;
-import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
 public class LogTest {
-    private static final Logger logger = (Logger) LoggerFactory.getLogger(LogTest.class);
+    private  final static Logger logger =  LoggerFactory.getLogger(LogTest.class);
 
     @Test
     void testLog(){

@@ -28,6 +28,7 @@ public class JacksonUtil {
         return tryParse(parser, JacksonException.class);
     }
 
+
     //序列化
     private static <T> T tryParse(Callable<T> parser,Class<? extends Exception> check){
         try {
@@ -39,7 +40,24 @@ public class JacksonUtil {
             throw new IllegalStateException(e);
         }
     }
-    /*反序列化list
+    /*
+    反序列化
+    * */
+    public static <T> T readValue(String content,Class<T> valueType){
+        return JacksonUtil.tryParse(()->
+                JacksonUtil.getObjectMapper().readValue(content,valueType));
+    }
+
+
+
+
+    /*list序列化
+     * */
+    public static String writeValueAsString(Object value){
+        return JacksonUtil.tryParse(()->
+                JacksonUtil.getObjectMapper().writeValueAsString(value));
+    }
+    /*list反序列化
     * */
     public static <T> T readListValue(String content,Class<?> parameterClass){
         return JacksonUtil.tryParse(()->
@@ -50,10 +68,5 @@ public class JacksonUtil {
 
     }
 
-    /*序列化
-    * */
-    public static String writeValueAsString(Object value){
-        return JacksonUtil.tryParse(()->
-                JacksonUtil.getObjectMapper().writeValueAsString(value));
-    }
+
 }
