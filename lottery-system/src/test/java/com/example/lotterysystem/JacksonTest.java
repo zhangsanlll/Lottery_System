@@ -1,6 +1,6 @@
 package com.example.lotterysystem;
 
-import com.example.lotterysystem.common.result.CommonResult;
+import com.example.lotterysystem.common.pojo.CommonResult;
 import com.example.lotterysystem.common.utils.JacksonUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;

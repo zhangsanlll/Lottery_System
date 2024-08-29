@@ -9,6 +9,7 @@ controller层异常类
 * * */
 @Data
 @EqualsAndHashCode(callSuper = true)
+
 public class ControllerException extends RuntimeException{
     //业务异常码
     /*

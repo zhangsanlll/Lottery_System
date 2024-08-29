@@ -1,4 +1,4 @@
-package com.example.lotterysystem.common.result;
+package com.example.lotterysystem.common.pojo;
 
 import com.example.lotterysystem.common.errorcode.ErrorCode;
 import com.example.lotterysystem.common.errorcode.GlobalErrorCodeConstants;
