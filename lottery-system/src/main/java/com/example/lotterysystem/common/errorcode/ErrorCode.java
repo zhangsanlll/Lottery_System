@@ -8,10 +8,10 @@ public class ErrorCode {
     private final Integer code;
 
     //错误信息
-    private final String meg;
+    private final String msg;
 
-    public ErrorCode(Integer code, String meg) {
+    public ErrorCode(Integer code, String msg) {
         this.code = code;
-        this.meg = meg;
+        this.msg = msg;
     }
 }

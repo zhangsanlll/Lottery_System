@@ -43,7 +43,7 @@ public class CommonResult<T> {
     @return 新的CommonResult对象
     * */
     public static <T> CommonResult<T> error(ErrorCode errorCode) {
-    return error(errorCode.getCode(),errorCode.getMeg());
+    return error(errorCode.getCode(),errorCode.getMsg());
     }
 
 }
