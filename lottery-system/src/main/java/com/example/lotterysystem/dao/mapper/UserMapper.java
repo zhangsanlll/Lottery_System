@@ -18,4 +18,11 @@ public interface UserMapper {
             " values(#{userName},#{email},#{phoneNumber},#{identity},#{password})")
     @Options(useGeneratedKeys = true,keyProperty = "id",keyColumn = "id")//
     void insert(UserDO userDO);
+
+
+    @Select("select * from user where email = #{email}")
+    UserDO selectByMail(@Param("mail" )String mail);
+
+    @Select("select * from user where phone_number = #{phoneNumber}")
+    UserDO selectByMobile(@Param("phoneNumber" )Encrypt phoneNumber);
 }

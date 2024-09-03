@@ -6,7 +6,7 @@ import lombok.Data;
 import java.io.Serializable;
 
 /*
-controller中所有的 请求入参都放在这个类中维护调用
+controller中注册中所涉及的请求入参都放在这个类中维护调用
 * */
 @Data
 public class UserRegisterParam implements Serializable {

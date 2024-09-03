@@ -3,15 +3,22 @@ package com.example.lotterysystem.service.impl;
 import cn.hutool.crypto.digest.DigestUtil;
 import com.example.lotterysystem.common.errorcode.ServiceErrorCodeConstants;
 import com.example.lotterysystem.common.exception.ServiceException;
+import com.example.lotterysystem.common.utils.JWTUtil;
 import com.example.lotterysystem.common.utils.RegexUtil;
 import com.example.lotterysystem.controller.UserController;
+import com.example.lotterysystem.controller.param.ShortMessageLoginParam;
+import com.example.lotterysystem.controller.param.UserLoginParam;
+import com.example.lotterysystem.controller.param.UserPasswordLoginParam;
 import com.example.lotterysystem.controller.param.UserRegisterParam;
 import com.example.lotterysystem.dao.dataobject.Encrypt;
 import com.example.lotterysystem.dao.dataobject.UserDO;
 import com.example.lotterysystem.dao.mapper.UserMapper;
 import com.example.lotterysystem.service.UserService;
+import com.example.lotterysystem.service.VerificationCodeService;
+import com.example.lotterysystem.service.dto.UserLoginDTO;
 import com.example.lotterysystem.service.dto.UserRegisterDTO;
 import com.example.lotterysystem.service.enums.UserIdentityEnum;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.catalina.User;
 import org.slf4j.Logger;
@@ -22,6 +29,8 @@ import org.springframework.util.DigestUtils;
 import org.springframework.util.StringUtils;
 
 import javax.sql.rowset.serial.SerialException;
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -31,6 +40,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private VerificationCodeService verificationCodeService;
 
     @Override
     public UserRegisterDTO register(UserRegisterParam request) {
@@ -55,6 +67,113 @@ public class UserServiceImpl implements UserService {
         userRegisterDTO.setUserId(userDO.getId());
         return userRegisterDTO;
 
+    }
+
+    /**
+     * 登录方法的具体实现
+     * @param param 定义成父类，但接收的参数是子类的，进行了 向上转型
+     * @return
+     */
+    @Override
+    public UserLoginDTO login(UserLoginParam param) {
+        UserLoginDTO userLoginDTO;
+        //由于param定义的是父类，所以需要对参数类型进行检查与转换
+        //Java14及以上版本中定义了这样的语法，一句就可以搞定
+        //这条语句的含义是：如果param的类型是UserPasswordLoginParam ，
+        // 那么loginParam就是向上转型后UserPasswordLoginParam的变量名
+        if(param instanceof UserPasswordLoginParam loginParam){
+            //密码登录流程
+            userLoginDTO = loginByUserPassword(loginParam);
+        }else if(param instanceof ShortMessageLoginParam loginParam){
+            //验证码登录流程
+            userLoginDTO = loginByShortMessage(loginParam);
+        }else{
+            throw new ServiceException(ServiceErrorCodeConstants.LOGIN_INFO_NOT_EXIT);
+        }
+        return userLoginDTO;
+    }
+
+    /**
+     * 短信验证码登录
+     * @param loginParam
+     * @return
+     */
+    private UserLoginDTO loginByShortMessage(ShortMessageLoginParam loginParam) {
+
+        //校验手机号
+        if(!RegexUtil.checkMobile(loginParam.getLoginMobile())){
+            throw new ServiceException(ServiceErrorCodeConstants.PHONE_NUMBER_ERROR);
+        }
+        //获取用户数据
+        UserDO userDo = userMapper.selectByMobile(new Encrypt(loginParam.getLoginMobile()));
+        if(null == userDo){
+            throw new ServiceException(ServiceErrorCodeConstants.USER_INFO_IS_EMPTY);
+        } else if (StringUtils.hasText(loginParam.getMandatoryIdentity()) &&
+                !loginParam.getMandatoryIdentity().equals(userDo.getIdentity())) {
+            //验证是否是强制身份
+            throw new ServiceException(ServiceErrorCodeConstants.IDENTITY_ERROR);
+        }
+
+        //校验验证码
+        String code = verificationCodeService.getVerificationCode(loginParam.getLoginMobile());
+        if(! loginParam.getVerificationCode().equals(code)){
+            throw new ServiceException(ServiceErrorCodeConstants.VERIFICATION_CODE_ERROR);
+        }
+        //所有信息校验完了之后开始塞入返回值（JWT)
+        Map<String , Object> claim = new HashMap<>();
+        claim.put("id",userDo.getId());
+        claim.put("identity",userDo.getIdentity());
+        String token = JWTUtil.genJwt(claim);
+
+        UserLoginDTO userLoginDTO = new UserLoginDTO();
+        userLoginDTO.setToken(token);
+        userLoginDTO.setIdentity(UserIdentityEnum.forName(userDo.getIdentity()));
+        return userLoginDTO;
+    }
+
+    /**
+     * 密码登录
+     * @param loginParam
+     * @return
+     */
+    private UserLoginDTO loginByUserPassword(UserPasswordLoginParam loginParam) {
+        UserDO userDO;
+        //判断手机登录还是邮箱登录
+        if(RegexUtil.checkMobile(loginParam.getLoginName())){
+            //邮箱登录
+            //根据邮箱查询用户表
+            userDO = userMapper.selectByMail(loginParam.getLoginName());
+        } else if (RegexUtil.checkMobile(loginParam.getLoginName())) {
+            //手机号登录
+            //根据手机号查询用户表
+            //手机号需要加密
+            userDO = userMapper.selectByMobile(new Encrypt(loginParam.getLoginName()));
+        }else{
+            throw new ServiceException(ServiceErrorCodeConstants.LOGIN_INFO_NOT_EXIT);
+        }
+
+        //校验登录信息
+        if(null == userDO){
+            throw new ServiceException(ServiceErrorCodeConstants.MAIL_IS_EMPTY);
+        } else if (StringUtils.hasText(loginParam.getMandatoryIdentity())
+        && !loginParam.getMandatoryIdentity().equalsIgnoreCase(userDO.getIdentity())) {
+            //强制身份登录，身份校验不通过
+            throw new ServiceException(ServiceErrorCodeConstants.IDENTITY_ERROR);
+        } else if (!DigestUtil.sha256Hex(loginParam.getPassword()).equals(userDO.getPassword())) {
+            //校验密码不同
+            throw new ServiceException(ServiceErrorCodeConstants.PASSWORD_ERROR);
+        }
+
+        //所有信息校验完了之后开始塞入返回值（JWT)
+        Map<String , Object> claim = new HashMap<>();
+        claim.put("id",userDO.getId());
+        claim.put("identity",userDO.getIdentity());
+        String token = JWTUtil.genJwt(claim);
+
+        UserLoginDTO userLoginDTO = new UserLoginDTO();
+        userLoginDTO.setToken(token);
+        userLoginDTO.setIdentity(UserIdentityEnum.forName(userDO.getIdentity()));
+        return userLoginDTO;
     }
 
     /*

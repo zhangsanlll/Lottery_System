@@ -14,6 +14,9 @@ public interface ServiceErrorCodeConstants {
     ErrorCode PHONE_USED = new ErrorCode(108,"手机号为空");
     ErrorCode PHONE_IS_EMPTY = new ErrorCode(109,"手机号杯使用过");
 
+    ErrorCode LOGIN_INFO_NOT_EXIT = new ErrorCode(110,"登录信息不存在");
+    ErrorCode USER_INFO_IS_EMPTY = new ErrorCode(111,"用户信息为空");
+    ErrorCode VERIFICATION_CODE_ERROR = new ErrorCode(112,"验证码错误");
 
     //活动模块错误码
 
