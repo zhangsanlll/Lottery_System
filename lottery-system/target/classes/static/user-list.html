@@ -114,10 +114,11 @@
 
         // 发送AJAX请求
         $.ajax({
-            url: '',
-            type: '',
+            url: '/base-user/find-list',
+            type: 'GET',
             headers: {
                 // jwt
+                "user_token":userToken
             },
             success: function(result) {
                 if (result.code != 200) {
@@ -129,7 +130,9 @@
                     userList.empty();
                     users.forEach(function(user) {
                         userList.append('<tr> ' +
-                        '<td>' +  + '</td>' +
+                        '<td>' +  user.userId+ '</td>' +
+                        '<td>' +  user.userName+ '</td>' +
+                        '<td>' +  user.identity+ '</td>' +
                         '</tr>');
                     });
                 } // else end

@@ -15,6 +15,7 @@ import com.example.lotterysystem.dao.dataobject.UserDO;
 import com.example.lotterysystem.dao.mapper.UserMapper;
 import com.example.lotterysystem.service.UserService;
 import com.example.lotterysystem.service.VerificationCodeService;
+import com.example.lotterysystem.service.dto.UserDTO;
 import com.example.lotterysystem.service.dto.UserLoginDTO;
 import com.example.lotterysystem.service.dto.UserRegisterDTO;
 import com.example.lotterysystem.service.enums.UserIdentityEnum;
@@ -30,7 +31,9 @@ import org.springframework.util.StringUtils;
 
 import javax.sql.rowset.serial.SerialException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -93,6 +96,23 @@ public class UserServiceImpl implements UserService {
         return userLoginDTO;
     }
 
+    @Override
+    public List<UserDTO> findUserInfo(UserIdentityEnum identity) {
+        String identityString = null ==identity ? null :identity.name();
+        //查表
+        List<UserDO> userDOList = userMapper.selectUserListByIdentity(identityString);
+        List<UserDTO> userDTOList = userDOList.stream().map(userDO -> {
+            UserDTO userDTO = new UserDTO();
+            userDTO.setUserId(userDO.getId());
+            userDTO.setUserName(userDO.getUserName());
+            userDTO.setEmail(userDO.getEmail());
+            userDTO.setPhoneNumber(userDO.getPhoneNumber().getValue());
+            userDTO.setIdentity(UserIdentityEnum.forName(userDO.getIdentity()));
+            return userDTO;
+        }).collect(Collectors.toList());
+            return userDTOList;
+    }
+
     /**
      * 短信验证码登录
      * @param loginParam
@@ -139,14 +159,17 @@ public class UserServiceImpl implements UserService {
     private UserLoginDTO loginByUserPassword(UserPasswordLoginParam loginParam) {
         UserDO userDO;
         //判断手机登录还是邮箱登录
-        if(RegexUtil.checkMobile(loginParam.getLoginName())){
+        logger.info("走到这里了,loginParam.getLoginName():{}",loginParam.getLoginName());
+        if(RegexUtil.checkMail(loginParam.getLoginName())){
             //邮箱登录
             //根据邮箱查询用户表
+            logger.info("邮箱登录");
             userDO = userMapper.selectByMail(loginParam.getLoginName());
         } else if (RegexUtil.checkMobile(loginParam.getLoginName())) {
             //手机号登录
             //根据手机号查询用户表
             //手机号需要加密
+            logger.info("手机号登录");
             userDO = userMapper.selectByMobile(new Encrypt(loginParam.getLoginName()));
         }else{
             throw new ServiceException(ServiceErrorCodeConstants.LOGIN_INFO_NOT_EXIT);
@@ -252,6 +275,7 @@ public class UserServiceImpl implements UserService {
         //
         return userMapper.countByPhone(new Encrypt(phoneNumber)) > 0;
     }
+
 
 
 }

@@ -25,4 +25,8 @@ public interface ServiceErrorCodeConstants {
 
 
     //抽奖模块错误码
+
+    //图片错误码
+    ErrorCode PIC_UPLOAD_ERROR = new ErrorCode(500,"验证码错误");
+
 }

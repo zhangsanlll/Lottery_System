@@ -74,6 +74,7 @@
 
 <script>
     var params = new URLSearchParams(window.location.search);
+    var jumpList = params.get('jumpList');
     var admin = params.get('admin');
 
     // 判断是否隐藏密码输入框
@@ -124,8 +125,17 @@
                     if(result.code != 200){
                         alert("注册失败！"+result.msg);
                     }else{
-                        alert("注册成功，去登录！");
+                        //如果是管理员新增用户，直接跳转到用户列表页中去
+                        if(jumpList === 'true'){
+                            window.parent.postMessage({
+                                from:'user-list.html',
+                                id:'#userList'
+                            },'*');
+                        }else{
+                            alert("注册成功，去登录！");
                         location.assign("blogin.html");
+                        }
+                        
                     }
                 }
             });

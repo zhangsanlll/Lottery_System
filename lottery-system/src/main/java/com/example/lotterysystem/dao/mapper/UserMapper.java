@@ -2,13 +2,16 @@ package com.example.lotterysystem.dao.mapper;
 
 import com.example.lotterysystem.dao.dataobject.Encrypt;
 import com.example.lotterysystem.dao.dataobject.UserDO;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.annotations.*;
+
+import java.util.List;
 
 @Mapper
 public interface UserMapper {
 
     @Select("select count(*) from user where email = #{email}")
-    int countByMail(@Param("email" ) String mail);
+    int countByMail(@Param("email" ) String email);
 
 
     @Select("select count(*) from user where phone_number = #{phoneNumber}")
@@ -21,8 +24,22 @@ public interface UserMapper {
 
 
     @Select("select * from user where email = #{email}")
-    UserDO selectByMail(@Param("mail" )String mail);
+    UserDO selectByMail(@Param("email" )String email);
 
     @Select("select * from user where phone_number = #{phoneNumber}")
     UserDO selectByMobile(@Param("phoneNumber" )Encrypt phoneNumber);
+
+    /**
+     * 根据身份信息查询人员列表
+     * @param identity
+     * @return
+     */
+    @Select("<script>" +
+            " select * from user" +
+            " <if test=\"identity!=null\">" +
+            "    where identity = #{identity}" +
+            " </if>" +
+            " order by id desc" +
+            " </script>")
+    List<UserDO> selectUserListByIdentity(@Param("identity" )String identity);
 }
