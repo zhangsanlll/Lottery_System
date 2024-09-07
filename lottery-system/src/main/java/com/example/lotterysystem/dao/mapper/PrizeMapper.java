@@ -20,4 +20,17 @@ public interface PrizeMapper {
     @Select("select * from prize order by id desc limit #{offset},#{pageSize}")
     List<PrizeDO> selectPrizeList(@Param("offset") Integer offset,
                                   @Param("pageSize")Integer pageSize);
+
+
+    @Select("<script> " +
+            " select id from prize" +
+            " where id in " +
+            " <foreach item = 'item' collection = 'items' open = '(' separator = ',' close = ')'>"+
+            "#{item} " +
+            "</foreach>"+
+            "</script>")
+    List<Long> selectExistById(@Param("items") List<Long> prizeIds);
+
+
+    List<PrizeDO> batchSelectByIds(List<Long> prizeIds);
 }

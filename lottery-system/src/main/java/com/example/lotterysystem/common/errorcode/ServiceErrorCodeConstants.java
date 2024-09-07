@@ -18,10 +18,20 @@ public interface ServiceErrorCodeConstants {
     ErrorCode USER_INFO_IS_EMPTY = new ErrorCode(111,"用户信息为空");
     ErrorCode VERIFICATION_CODE_ERROR = new ErrorCode(112,"验证码错误");
 
-    //活动模块错误码
+
 
 
     //奖品模块错误码
+
+
+
+    //活动模块错误码
+    ErrorCode CREATE_ACTIVITY_INFO_IS_EMPTY = new ErrorCode(300,"创建活动信息为空");
+    ErrorCode ACTIVITY_USER_ERROR = new ErrorCode(301,"创建活动关联人员异常");
+    ErrorCode ACTIVITY_PRIZE_ERROR = new ErrorCode(302,"创建活动关联奖品异常");
+    ErrorCode USER_PRIZE_AMOUNT_ERROR = new ErrorCode(303,"创建活动关联的奖品数量和人员数量异常");
+    ErrorCode ACTIVITY_PRIZE_TIERS_ERROR = new ErrorCode(304,"活动奖品等级错误");
+
 
 
     //抽奖模块错误码
