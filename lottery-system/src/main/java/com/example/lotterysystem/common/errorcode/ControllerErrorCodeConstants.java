@@ -10,7 +10,9 @@ public interface ControllerErrorCodeConstants {
 
 
     //活动模块错误码
-    ErrorCode CREATE_ACTIVITY_ERROR = new ErrorCode(300,"创建活动失败失败！");
+    ErrorCode CREATE_ACTIVITY_ERROR = new ErrorCode(300,"创建活动失败！");
+    ErrorCode FIND_ACTIVITY_LIST_ERROR = new ErrorCode(301,"查找活动列表失败！");
+    ErrorCode GET_ACTIVITY_DETAIL_ERROR = new ErrorCode(302,"查找活动详细信息失败！");
 
 
 

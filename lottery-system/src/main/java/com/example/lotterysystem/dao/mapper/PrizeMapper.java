@@ -32,5 +32,12 @@ public interface PrizeMapper {
     List<Long> selectExistById(@Param("items") List<Long> prizeIds);
 
 
-    List<PrizeDO> batchSelectByIds(List<Long> prizeIds);
+    @Select("<script> " +
+            " select * from prize" +
+            " where id in " +
+            " <foreach item = 'item' collection = 'items' open = '(' separator = ',' close = ')'>"+
+            " #{item} " +
+            " </foreach>"+
+            " </script>")
+    List<PrizeDO> batchSelectByIds(@Param("items")List<Long> prizeIds);
 }

@@ -24,7 +24,9 @@ public class AppConfig implements WebMvcConfigurer {
              "/register",
              "/verification-code/send",
              "/winning-records/show",
-             "/activity/create"
+             "/activity/create",
+             "/activity-detail/find"
+
      );
     @Override
     public void addInterceptors(InterceptorRegistry registry) {

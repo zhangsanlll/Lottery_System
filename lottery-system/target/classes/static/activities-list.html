@@ -133,20 +133,25 @@
         currentPage: currentPage,
         pageSize: pageSize
       };
-      // 发送AJAX请求
+      // 发送AJAX请求s
       $.ajax({
-          url: '',
-          type: '',
+          url: '/activity/find-list',
+          type: 'GET',
           data: dataToSend, // 将分页参数作为请求数据发送
           dataType: 'json',
           headers: {
             // jwt
+            "user_token":userToken
           },
           success: function(result) {
             if (result.code != 200) {
                 alert("查询活动列表失败！" + result.msg);
             } else {
+                //console.info("result:",result);
+               // console.info("result.data:",result.data);
                 var activities = result.data.records; // 假设返回的数据中活动列表字段为 'records'
+                //console.info("result.data.records:",result.data.records);
+                //console.info("activities.description:",activities.description);
                 var activitiesHtml = '';
                 var listContainer = document.getElementById('activities');
                 // 在添加新内容前，先清空listContainer
@@ -159,6 +164,7 @@
                   var linkTextInactive = `<a href="${url}" target="_blank">活动已完成，查看中奖名单</a>`;
                   var validClass = activity.valid ? 'active' : 'inactive';
                   var link = activity.valid ? linkTextActive : linkTextInactive;
+                 // console.info("activity.description:",activity.description);
                   activitiesHtml += `
                       <div class="activity-item">
                         <div class="activity-info">

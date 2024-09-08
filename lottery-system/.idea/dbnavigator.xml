@@ -24,13 +24,19 @@
     <last-used-providers />
   </component>
   <component name="DBNavigator.Project.DatabaseFileManager">
-    <open-files />
+    <open-files>
+      <object connection-id="775b5785-bd19-4286-a8ba-ad58f8075ab7" object-ref="schemas/lottery_system/tables/activity" />
+    </open-files>
   </component>
   <component name="DBNavigator.Project.DatabaseSessionManager">
     <connection id="775b5785-bd19-4286-a8ba-ad58f8075ab7" />
   </component>
   <component name="DBNavigator.Project.DatasetFilterManager">
     <filter-actions connection-id="775b5785-bd19-4286-a8ba-ad58f8075ab7" dataset="lottery_system.user" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="775b5785-bd19-4286-a8ba-ad58f8075ab7" dataset="lottery_system.activity" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="775b5785-bd19-4286-a8ba-ad58f8075ab7" dataset="lottery_system.prize" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="775b5785-bd19-4286-a8ba-ad58f8075ab7" dataset="lottery_system.activity_user" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="775b5785-bd19-4286-a8ba-ad58f8075ab7" dataset="lottery_system.activity_prize" active-filter-id="EMPTY_FILTER" />
   </component>
   <component name="DBNavigator.Project.ExecutionManager">
     <retain-sticky-names value="false" />

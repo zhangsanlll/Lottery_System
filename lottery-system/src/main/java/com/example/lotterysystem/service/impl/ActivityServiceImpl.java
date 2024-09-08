@@ -7,14 +7,17 @@ import com.example.lotterysystem.common.utils.RedisUtil;
 import com.example.lotterysystem.controller.param.CreateActivityParam;
 import com.example.lotterysystem.controller.param.CreatePrizeByActivityParam;
 import com.example.lotterysystem.controller.param.CreateUserByActivityParam;
+import com.example.lotterysystem.controller.param.PageParam;
 import com.example.lotterysystem.dao.dataobject.ActivityDO;
 import com.example.lotterysystem.dao.dataobject.ActivityPrizeDO;
 import com.example.lotterysystem.dao.dataobject.ActivityUserDO;
 import com.example.lotterysystem.dao.dataobject.PrizeDO;
 import com.example.lotterysystem.dao.mapper.*;
 import com.example.lotterysystem.service.ActivityService;
+import com.example.lotterysystem.service.dto.ActivityDTO;
 import com.example.lotterysystem.service.dto.ActivityDetailDTO;
 import com.example.lotterysystem.service.dto.CreateActivityDTO;
+import com.example.lotterysystem.service.dto.PageListDTO;
 import com.example.lotterysystem.service.enums.ActivityPrizeStatusEnum;
 import com.example.lotterysystem.service.enums.ActivityPrizeTiersStatusEnum;
 import com.example.lotterysystem.service.enums.ActivityStatusEnum;
@@ -79,7 +82,7 @@ public class ActivityServiceImpl implements ActivityService {
                     activityPrizeDO.setActivityId(activityDO.getId());
                     activityPrizeDO.setPrizeId(prizeParam.getPrizeId());
                     activityPrizeDO.setPrizeAmount(prizeParam.getPrizeAmount());
-                    activityPrizeDO.setPrizeTiers(prizeParam.getPrizeTires());
+                    activityPrizeDO.setPrizeTiers(prizeParam.getPrizeTiers());
                     activityPrizeDO.setStatus(ActivityPrizeStatusEnum.INIT.name());
                     return activityPrizeDO;
                 }).collect(Collectors.toList());
@@ -116,6 +119,60 @@ public class ActivityServiceImpl implements ActivityService {
         CreateActivityDTO createActivityDTO = new CreateActivityDTO();
         createActivityDTO.setActivityId(activityDO.getId());
         return createActivityDTO;
+    }
+
+    @Override
+    public PageListDTO<ActivityDTO> findActivityList(PageParam param) {
+        //获取总量
+        int total = activityMapper.count();
+
+        //获取当前列表
+        List<ActivityDO> activityDOList = activityMapper.selectActivityList(param.offset(),param.getPageSize());
+        List<ActivityDTO> activityDTOList = activityDOList.stream()
+                .map(activityDO -> {
+                    ActivityDTO activityDTO = new ActivityDTO();
+                    activityDTO.setActivityId(activityDO.getId());
+                    activityDTO.setActivityName(activityDO.getActivityName());
+                    activityDTO.setDescription(activityDO.getDescription());
+                    activityDTO.setStatus(ActivityStatusEnum.forName(activityDO.getStatus()));
+                    return activityDTO;
+                }).collect(Collectors.toList());
+        return new PageListDTO<>(total,activityDTOList);
+    }
+
+    @Override
+    public ActivityDetailDTO getActivityDetail(Long activityId) {
+        if(null == activityId){
+            logger.warn("查询活动详细信息失败，activityId为空！");
+            return null;
+        }
+        //查询redis
+        ActivityDetailDTO detailDTO = getActivityFromCache(activityId);
+        if(null != detailDTO){
+            logger.info("查询活动详细信息成功！ detailDTO ={}",
+                    JacksonUtil.writeValueAsString(activityId));
+            return detailDTO;
+        }
+        //如果redis不存在，查表
+        //活动表
+        ActivityDO aDO = activityMapper.selectById(activityId);
+
+        //活动奖品表
+        List<ActivityPrizeDO> apDOList = activityPrizeMapper.selectByActivityId(activityId);
+
+        //活动人员表
+        List<ActivityUserDO> auDOList = activityUserMapper.selectByActivityId(activityId);
+
+        //奖品表，先获取要查询的奖品id
+        List<Long> prizeIds = apDOList.stream()
+                .map(ActivityPrizeDO::getPrizeId)
+                .collect(Collectors.toList());
+        List<PrizeDO> pDOList = prizeMapper.batchSelectByIds(prizeIds);
+        //整合活动详细信息，存放redis
+        detailDTO = convertActivityDetailDTO(aDO,auDOList,pDOList,apDOList);
+        cacheActivity(detailDTO);
+        return detailDTO;
+
     }
 
     /**
@@ -228,6 +285,7 @@ public class ActivityServiceImpl implements ActivityService {
         //人员id在人员表中是否存在
         //比如：1  2  3 ->   1   2()检查后
         //userIds是从前端接收回来的需要校验的人员
+
         List<Long> userIds = param.getActivityUserList().stream().map(CreateUserByActivityParam::getUserId)
                 .distinct().collect(Collectors.toList());
         //existUserIds是在数据库中查出来的
@@ -267,7 +325,7 @@ public class ActivityServiceImpl implements ActivityService {
         //校验活动奖品等级有效性
 
         param.getActivityPrizeList().forEach(prize->{
-            if(null == ActivityPrizeTiersStatusEnum.forName(prize.getPrizeTires())){
+            if(null == ActivityPrizeTiersStatusEnum.forName(prize.getPrizeTiers())){
                 throw new ServiceException(ServiceErrorCodeConstants.ACTIVITY_PRIZE_TIERS_ERROR);
             }
         });
