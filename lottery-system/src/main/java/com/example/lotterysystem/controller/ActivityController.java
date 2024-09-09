@@ -62,13 +62,14 @@ public class ActivityController {
         return CommonResult.success(convertToGetActivityDetailResult(detailDTO));
     }
 
-    private GetActivityDetailResult convertToGetActivityDetailResult(ActivityDetailDTO detailDTO) throws ControllerException {
+    private GetActivityDetailResult convertToGetActivityDetailResult(ActivityDetailDTO detailDTO)  {
         if(null == detailDTO){
             throw new ControllerException(ControllerErrorCodeConstants.GET_ACTIVITY_DETAIL_ERROR);
         }
         GetActivityDetailResult result = new GetActivityDetailResult();
         result.setActivityId(detailDTO.getActivityId());
         result.setActivityName(detailDTO.getActivityName());
+        result.setDescription(detailDTO.getDescription());
         result.setValid(detailDTO.valid());
         //抽奖顺序：一、二、三
         result.setPrizes(
@@ -82,11 +83,12 @@ public class ActivityController {
                             prize.setPrice(prizeDTO.getPrice());
                             prize.setDescription(prizeDTO.getDescription());
                             prize.setPrizeTierName(prizeDTO.getTiers().getMessage());
-                            prize.setPriceAmount(prize.getPriceAmount());
+                            prize.setPriceAmount(prizeDTO.getPrizeAmount());
                             prize.setValid(prizeDTO.valid());
                             return prize;
                         }).collect(Collectors.toList())
         );
+        logger.info("result:{}",result);
         result.setUsers(
                 detailDTO.getUserDTOList().stream()
                         .map(userDTO -> {

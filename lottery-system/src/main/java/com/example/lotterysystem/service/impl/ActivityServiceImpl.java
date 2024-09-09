@@ -253,7 +253,7 @@ public class ActivityServiceImpl implements ActivityService {
                         prizeDTO.setDescription(prizeDO.getDescription());
                         prizeDTO.setPrice(prizeDO.getPrice());
                         prizeDTO.setImageUrl(prizeDO.getImageUrl());
-                        prizeDTO.setName(prizeDTO.getName());
+                        prizeDTO.setName(prizeDO.getName());
                     });
                     prizeDTO.setPrizeAmount(apDO.getPrizeAmount());
                     prizeDTO.setStatus(ActivityPrizeStatusEnum.forName(apDO.getStatus()));

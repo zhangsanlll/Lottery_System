@@ -20,5 +20,8 @@ public interface ActivityPrizeMapper {
 
     @Select("select * from activity_prize where activity_id = #{activityId}")
     List<ActivityPrizeDO> selectByActivityId(@Param("activityId") Long activityId);
+
+    @Select("select * from activity_prize where activity_id = #{activityId} and prize_id = #{prizeId}")
+    ActivityPrizeDO selectByAPId(@Param("activityId")Long activityId, @Param("prizeId")Long prizeId);
 }
 
