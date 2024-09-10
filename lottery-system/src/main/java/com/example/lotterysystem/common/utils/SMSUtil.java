@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
 @Component
 public class SMSUtil {
     private static final Logger logger = LoggerFactory.getLogger(SMSUtil.class);
@@ -21,13 +22,15 @@ public class SMSUtil {
     @Value(value = "${sms.access-key-secret}")
     private String accessKeySecret;
 
-    /**
+
+     /**
      * 发送短信
      *
      * @param templateCode 模板号
      * @param phoneNumbers 手机号
      * @param templateParam 模板参数 {"key":"value"}
      */
+
     public void sendMessage(String templateCode, String phoneNumbers, String templateParam) {
         try {
             Client client = createClient();
@@ -55,10 +58,12 @@ public class SMSUtil {
         }
     }
 
+
     /**
      * 使用AK&SK初始化账号Client
      * @return Client
      */
+
     private Client createClient() throws Exception {
         // 工程代码泄露可能会导致 AccessKey 泄露，并威胁账号下所有资源的安全性。以下代码示例仅供参考。
         // 建议使用更安全的 STS 方式，更多鉴权访问方式请参见：https://help.aliyun.com/document_detail/378657.html。

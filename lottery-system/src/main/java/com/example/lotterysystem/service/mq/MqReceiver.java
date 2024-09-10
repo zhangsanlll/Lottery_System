@@ -2,18 +2,26 @@ package com.example.lotterysystem.service.mq;
 
 import com.example.lotterysystem.common.exception.ServiceException;
 import com.example.lotterysystem.common.utils.JacksonUtil;
+import com.example.lotterysystem.common.utils.MailUtil;
+import com.example.lotterysystem.common.utils.SMSUtil;
 import com.example.lotterysystem.controller.param.DrawPrizeParam;
+import com.example.lotterysystem.dao.dataobject.ActivityPrizeDO;
+import com.example.lotterysystem.dao.dataobject.WinningRecordDO;
+import com.example.lotterysystem.dao.mapper.ActivityPrizeMapper;
 import com.example.lotterysystem.service.DrawPrizeService;
 import com.example.lotterysystem.service.dto.ConvertActivityStatusDTO;
+import com.example.lotterysystem.service.enums.ActivityPrizeStatusEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 
 
 import java.rmi.server.ServerCloneException;
+import java.util.List;
 import java.util.Map;
 
 import static com.example.lotterysystem.common.config.DirectRabbitConfig.QUEUE_NAME;
@@ -25,6 +33,15 @@ public class MqReceiver {
 
     @Autowired
     private DrawPrizeService drawPrizeService;
+    @Autowired
+    private ActivityPrizeMapper activityPrizeMapper;
+
+    @Autowired
+    private ThreadPoolTaskExecutor threadPoolTaskExecutor;
+    @Autowired
+    private MailUtil mailUtil;
+    @Autowired
+    private SMSUtil smsUtil;
 
     @RabbitHandler
     public void process(Map<String,String> message){
@@ -39,8 +56,12 @@ public class MqReceiver {
             drawPrizeService.checkDrawPrizeParam(param);
             //状态扭转处理(十分重要，会加入设计模式)
             statusConvert(param);
-            //通知中奖者（邮箱、短信）
 
+            //保存中奖者名单
+            List<WinningRecordDO> winningRecordDOList = drawPrizeService.saveWinnerRecords(param);
+
+            //通知中奖者（邮箱、短信）
+            syncExecute(winningRecordDOList);
             //如果异常，需要保证事务一致性（回滚），抛出异常
 
         }catch (ServiceException e){
@@ -51,9 +72,29 @@ public class MqReceiver {
 
     }
 
-    private void statusConvert(DrawPrizeParam param) {
-        ConvertActivityStatusDTO convertActivityStatusDTO = new ConvertActivityStatusDTO();
+    /**
+     * 并发处理抽奖后续流程
+     * @param winningRecordDOList
+     */
+    private void syncExecute(List<WinningRecordDO> winningRecordDOList) {
+        // 通过线程池 threadPoolTaskExecutor
+        // 扩展：加入策略模式或者其他设计模式来完成后续的异步操作
+        // 短信通知
+        threadPoolTaskExecutor.execute(()->sendMessage(winningRecordDOList));
+        //邮件通知
+        threadPoolTaskExecutor.execute(()->sendMail(winningRecordDOList));
+    }
 
+    private boolean statusConvert(DrawPrizeParam param) {
+        // 判断活动+奖品+人员表相关状态是否已经扭转（正常思路）
+        // 扭转状态时，保证了事务一致性，要么都扭转了，要么都没扭转（不包含活动）：
+        // 因此，只用判断人员/奖品是否扭转过，就能判断出状态是否全部扭转
+        // 不能判断活动是否已经扭转
+        // 结论：判断奖品状态是否扭转，就能判断出全部状态是否扭转
+        ActivityPrizeDO aPDO = activityPrizeMapper.selectByAPId(param.getActivityId(), param.getPrizeId());
+        //已经扭转了，需要回滚
+        return aPDO.getStatus()
+                .equalsIgnoreCase(ActivityPrizeStatusEnum.COMPLETED.name());
     }
 
 //    private void statusConvert(DrawPrizeParam param) {

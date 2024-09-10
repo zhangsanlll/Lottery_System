@@ -31,6 +31,9 @@ public interface ServiceErrorCodeConstants {
     ErrorCode ACTIVITY_PRIZE_ERROR = new ErrorCode(302,"创建活动关联奖品异常");
     ErrorCode USER_PRIZE_AMOUNT_ERROR = new ErrorCode(303,"创建活动关联的奖品数量和人员数量异常");
     ErrorCode ACTIVITY_PRIZE_TIERS_ERROR = new ErrorCode(304,"活动奖品等级错误");
+    ErrorCode ACTIVITY_STATUS_CONVERT_FAIL = new ErrorCode(305,"活动状态转换失败！");
+    ErrorCode CACHE_ACTIVITY_ID_IS_EMPTY = new ErrorCode(306,"缓存的活动id为空！！");
+    ErrorCode CACHE_ACTIVITY_ID_ERROR= new ErrorCode(307,"缓存的活动id错误！");
 
 
 

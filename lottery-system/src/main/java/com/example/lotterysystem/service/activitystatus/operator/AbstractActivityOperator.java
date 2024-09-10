@@ -11,9 +11,17 @@ public abstract class AbstractActivityOperator {
     public abstract Integer sequence();
 
     /**
-     * 是否需要转换
+     * 判断是否需要转换
      * @param convertActivityStatusDTO
      * @return
      */
     public abstract Boolean needConvert(ConvertActivityStatusDTO convertActivityStatusDTO);
+
+    /**
+     * 真正的转换方法
+     * @param convertActivityStatusDTO
+     * @return
+     */
+    public abstract Boolean convert(ConvertActivityStatusDTO convertActivityStatusDTO);
+
 }

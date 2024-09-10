@@ -13,8 +13,8 @@ public class SMSTest {
     @Test
     void smsTest(){
         //${"code":"1344"}
-        smsUtil.sendMessage("SMS_472470255",
-                "18481017932",
-                "{\"code\":\"6437\"}");
+        /*smsUtil.sendMessage("xxxxxx",
+                "xxxxxx",
+                "{\"code\":\"6437\"}");*/
     }
 }

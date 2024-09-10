@@ -40,4 +40,7 @@ public interface PrizeMapper {
             " </foreach>"+
             " </script>")
     List<PrizeDO> batchSelectByIds(@Param("items")List<Long> prizeIds);
+
+    @Select("select * from prize where id = #{activityId}")
+    PrizeDO selectById(@Param("items")Long prizeId);
 }

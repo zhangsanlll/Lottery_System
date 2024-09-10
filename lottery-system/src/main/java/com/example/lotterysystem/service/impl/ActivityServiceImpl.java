@@ -175,6 +175,37 @@ public class ActivityServiceImpl implements ActivityService {
 
     }
 
+    @Override
+    public void cacheActivity(Long activityId) {
+        if(null == activityId){
+            logger.warn("要缓存的活动id为空！");
+            throw new ServiceException(ServiceErrorCodeConstants.CACHE_ACTIVITY_ID_IS_EMPTY);
+        }
+
+        //查询表数据：活动表、关联奖品、关联人员、奖品信息表
+        ActivityDO aDO = activityMapper.selectById(activityId);
+        if(null == aDO){
+            logger.error("要缓存的活动id错误！");
+            throw new ServiceException(ServiceErrorCodeConstants.CACHE_ACTIVITY_ID_ERROR);
+        }
+
+        //活动奖品表
+        List<ActivityPrizeDO> aPDOList = activityPrizeMapper.selectByActivityId(activityId);
+
+        //活动人员表
+        List<ActivityUserDO> aUDOList = activityUserMapper.selectByActivityId(activityId);
+
+        //奖品表：先获取要查询的奖品id
+        List<Long> prizeIds = aPDOList.stream()
+                .map(ActivityPrizeDO::getPrizeId)
+                .collect(Collectors.toList());
+        List<PrizeDO> pDOList = prizeMapper.batchSelectByIds(prizeIds);
+
+        //整合活动详情信息，存放在redis中
+        cacheActivity(
+                convertActivityDetailDTO(aDO,aUDOList,pDOList,aPDOList));
+    }
+
     /**
      * 缓存完整的活动信息 ActivityDetailDTO
      * @param detailDTO

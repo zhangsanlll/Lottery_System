@@ -25,6 +25,11 @@ public interface ActivityMapper {
 
     @Select("select * from activity where id = #{activityId}")
     ActivityDO selectById(@Param("activityId") Long activityId);
+
+
+    @Update("update activity set status = #{status} where activity_id = #{activityId}")
+    void updateStatus(@Param("activityId")Long activityId,
+                      @Param("status")String status);
 }
 
 

@@ -49,7 +49,6 @@
     <orderEntry type="library" name="Maven: org.springframework.data:spring-data-commons:3.2.7" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-oxm:6.1.10" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-aop:6.1.10" level="project" />
-    <orderEntry type="library" name="Maven: org.springframework:spring-context-support:6.1.10" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:2.0.13" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-starter-web:3.2.7" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-starter-json:3.2.7" level="project" />
@@ -132,7 +131,6 @@
     <orderEntry type="library" name="Maven: org.ini4j:ini4j:0.5.4" level="project" />
     <orderEntry type="library" name="Maven: javax.xml.bind:jaxb-api:2.3.0" level="project" />
     <orderEntry type="library" name="Maven: com.sun.xml.bind:jaxb-core:4.0.5" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: org.eclipse.angus:angus-activation:2.0.2" level="project" />
     <orderEntry type="library" name="Maven: com.sun.xml.bind:jaxb-impl:4.0.5" level="project" />
     <orderEntry type="library" name="Maven: com.aliyun:alibabacloud-gateway-spi:0.0.1" level="project" />
     <orderEntry type="library" name="Maven: com.aliyun:tea-xml:0.1.5" level="project" />
@@ -148,5 +146,9 @@
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-databind:2.15.4" level="project" />
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-annotations:2.15.4" level="project" />
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-core:2.15.4" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-starter-mail:3.2.7" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework:spring-context-support:6.1.10" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.angus:jakarta.mail:2.0.3" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.eclipse.angus:angus-activation:2.0.2" level="project" />
   </component>
 </module>

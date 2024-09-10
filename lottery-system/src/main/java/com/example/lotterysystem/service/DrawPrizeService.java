@@ -1,6 +1,9 @@
 package com.example.lotterysystem.service;
 
 import com.example.lotterysystem.controller.param.DrawPrizeParam;
+import com.example.lotterysystem.dao.dataobject.WinningRecordDO;
+
+import java.util.List;
 
 public interface DrawPrizeService {
 
@@ -15,4 +18,11 @@ public interface DrawPrizeService {
      * @param param
      */
     void checkDrawPrizeParam(DrawPrizeParam param);
+
+    /**
+     * 保存中奖信息
+     * @param param
+     * @return
+     */
+    List<WinningRecordDO> saveWinnerRecords(DrawPrizeParam param);
 }

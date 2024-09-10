@@ -30,4 +30,10 @@ public interface ActivityService {
      * @return
      */
     ActivityDetailDTO getActivityDetail(Long activityId);
+
+    /**
+     * 更新缓存
+     * @param activityId
+     */
+    void cacheActivity(Long activityId);
 }
