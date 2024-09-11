@@ -1,15 +1,12 @@
 package com.example.lotterysystem.service.impl;
 
-import com.example.lotterysystem.common.errorcode.ServiceErrorCodeConstants;
-import com.example.lotterysystem.common.exception.ServiceException;
+
 import com.example.lotterysystem.common.utils.JacksonUtil;
 import com.example.lotterysystem.common.utils.RedisUtil;
-import com.example.lotterysystem.controller.DrawPrizeController;
 import com.example.lotterysystem.controller.param.DrawPrizeParam;
 import com.example.lotterysystem.dao.dataobject.*;
 import com.example.lotterysystem.dao.mapper.*;
 import com.example.lotterysystem.service.DrawPrizeService;
-import com.example.lotterysystem.service.dto.PrizeDTO;
 import com.example.lotterysystem.service.enums.ActivityPrizeStatusEnum;
 import com.example.lotterysystem.service.enums.ActivityStatusEnum;
 import org.slf4j.Logger;
@@ -25,6 +22,7 @@ import java.util.stream.Collectors;
 
 import static com.example.lotterysystem.common.config.DirectRabbitConfig.EXCHANGE_NAME;
 import static com.example.lotterysystem.common.config.DirectRabbitConfig.ROUTING;
+import static com.example.lotterysystem.common.errorcode.ServiceErrorCodeConstants.*;
 
 @Service
 public class DrawPrizeServiceImpl implements DrawPrizeService {
@@ -68,31 +66,40 @@ public class DrawPrizeServiceImpl implements DrawPrizeService {
      * @param param
      */
     @Override
-    public void checkDrawPrizeParam(DrawPrizeParam param) {
+    public Boolean checkDrawPrizeParam(DrawPrizeParam param) {
         ActivityDO activityDO = activityMapper.selectById(param.getActivityId());
         //奖品是否存在可以从 activity_prize表中拿取, 原因是保存activity做了本地事务，保证一致性
         ActivityPrizeDO activityPrizeDO = activityPrizeMapper.selectByAPId(
                 param.getActivityId(),param.getPrizeId());
         //活动或奖品是否存在
         if(null == activityDO || null == activityPrizeDO){
-            throw new ServiceException(ServiceErrorCodeConstants.ACTIVITY_OR_PRIZE_IS_EMPTY);
+            //throw new ServiceException(ServiceErrorCodeConstants.ACTIVITY_OR_PRIZE_IS_EMPTY);
+            logger.info("校验参数请求失败，失败原因：{}",ACTIVITY_OR_PRIZE_IS_EMPTY.getMsg());
+            return false;
         }
         //活动是否有效
         if(activityDO.getStatus()
                 .equalsIgnoreCase(ActivityStatusEnum.COMPLETED.name())){
-            throw new ServiceException(ServiceErrorCodeConstants.ACTIVITY_COMPLETED);
+            //throw new ServiceException(ServiceErrorCodeConstants.ACTIVITY_COMPLETED);
+            logger.info("校验参数请求失败，失败原因：{}",ACTIVITY_COMPLETED.getMsg());
+            return false;
         }
 
         //奖品是否有效
         if(activityPrizeDO.getStatus()
                 .equalsIgnoreCase(ActivityPrizeStatusEnum.COMPLETED.name())){
-            throw new ServiceException(ServiceErrorCodeConstants.ACTIVITY_PRIZE_COMPLETED);
+            //throw new ServiceException(ServiceErrorCodeConstants.ACTIVITY_PRIZE_COMPLETED);
+            logger.info("校验参数请求失败，失败原因：{}",ACTIVITY_PRIZE_COMPLETED.getMsg());
+            return false;
         }
 
         //中奖者人数是否和设置奖品数量一致
         if(activityPrizeDO.getPrizeAmount() != param.getWinnerList().size()){
-            throw new ServiceException(ServiceErrorCodeConstants.WINNER_PRIZE_AMOUNT_ERROR);
+            //throw new ServiceException(ServiceErrorCodeConstants.WINNER_PRIZE_AMOUNT_ERROR);
+            logger.info("校验参数请求失败，失败原因：{}",WINNER_PRIZE_AMOUNT_ERROR.getMsg());
+            return false;
         }
+        return true;
     }
 
     @Override
@@ -144,6 +151,40 @@ public class DrawPrizeServiceImpl implements DrawPrizeService {
                     allList,WINNING_RECORDS_TIMEOUT);
         }
         return winningRecordDOList;
+    }
+
+    @Override
+    public void deleteRecords(Long activityId, Long prizeId) {
+        if(null == activityId){
+            logger.warn("要删除中奖记录相关的活动id为空！");
+            return;
+        }
+        //删除数据表
+        winningRecordMapper.deleteRecords(activityId,prizeId);
+
+        //删除缓存（奖品维度和活动维度）
+        if(null != prizeId){
+            deleteWinningRecords(activityId+"_"+prizeId);
+        }
+        // 无论是否传递了prizeId，都需要删除活动维度的中奖记录缓存：
+        // 如果传递了prizeId, 证明奖品未抽奖，必须删除活动维度的缓存记录
+        // 如果没有传递prizeId，就只是删除活动维度的信息
+        deleteWinningRecords(String.valueOf(activityId));
+    }
+
+    /**
+     * 从缓存中删除中奖记录
+     * @param key
+     */
+    private void deleteWinningRecords(String key) {
+        try{
+            if(redisUtil.hasKey(WINNING_RECORDS_PREFIX + key)){
+                //如果存在就删除
+                redisUtil.del(WINNING_RECORDS_PREFIX + key);
+            }
+        } catch (Exception e){
+            logger.error("要删除中奖记录的缓存异常，key:{}",key);
+        }
     }
 
     /**

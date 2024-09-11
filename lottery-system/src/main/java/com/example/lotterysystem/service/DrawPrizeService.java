@@ -17,7 +17,7 @@ public interface DrawPrizeService {
      * 校验抽奖请求
      * @param param
      */
-    void checkDrawPrizeParam(DrawPrizeParam param);
+    Boolean checkDrawPrizeParam(DrawPrizeParam param);
 
     /**
      * 保存中奖信息
@@ -25,4 +25,6 @@ public interface DrawPrizeService {
      * @return
      */
     List<WinningRecordDO> saveWinnerRecords(DrawPrizeParam param);
+
+    void deleteRecords(Long activityId, Long prizeId);
 }
