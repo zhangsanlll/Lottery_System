@@ -4,10 +4,14 @@ package com.example.lotterysystem.service.impl;
 import com.example.lotterysystem.common.utils.JacksonUtil;
 import com.example.lotterysystem.common.utils.RedisUtil;
 import com.example.lotterysystem.controller.param.DrawPrizeParam;
+import com.example.lotterysystem.controller.param.ShowWinningRecordsParam;
+import com.example.lotterysystem.controller.result.WinningRecordResult;
 import com.example.lotterysystem.dao.dataobject.*;
 import com.example.lotterysystem.dao.mapper.*;
 import com.example.lotterysystem.service.DrawPrizeService;
+import com.example.lotterysystem.service.dto.WinningRecordDTO;
 import com.example.lotterysystem.service.enums.ActivityPrizeStatusEnum;
+import com.example.lotterysystem.service.enums.ActivityPrizeTiersStatusEnum;
 import com.example.lotterysystem.service.enums.ActivityStatusEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -170,6 +174,45 @@ public class DrawPrizeServiceImpl implements DrawPrizeService {
         // 如果传递了prizeId, 证明奖品未抽奖，必须删除活动维度的缓存记录
         // 如果没有传递prizeId，就只是删除活动维度的信息
         deleteWinningRecords(String.valueOf(activityId));
+    }
+
+    @Override
+    public List<WinningRecordDTO> getRecords(ShowWinningRecordsParam param) {
+        //查询redis:奖品、活动
+        String key = null == param.getPrizeId() ? String.valueOf(param.getActivityId())
+                : param.getActivityId()+"_"+ param.getPrizeId();
+        List<WinningRecordDO> winningRecordDOList = getWinningRecords(key);
+        if(! CollectionUtils.isEmpty(winningRecordDOList)){
+            return convertToWinningRecordDTOList(winningRecordDOList);
+        }
+        //如果redis不存在，查数据库
+        winningRecordDOList  = winningRecordMapper.
+                selectByActivityIdOrPrizeId(param.getActivityId(),param.getPrizeId());
+
+        //存放记录到redis中
+        if(CollectionUtils.isEmpty(winningRecordDOList)){
+            logger.info("查询的中奖记录为空！param:{}",JacksonUtil.writeValueAsString(param));
+            return Arrays.asList();
+        }
+        cacheWinningRecords(key,winningRecordDOList,WINNING_RECORDS_TIMEOUT);
+        return convertToWinningRecordDTOList(winningRecordDOList);
+    }
+
+    private List<WinningRecordDTO> convertToWinningRecordDTOList(List<WinningRecordDO> winningRecordDOList) {
+        if(CollectionUtils.isEmpty(winningRecordDOList)){
+            return Arrays.asList();
+        }
+        return winningRecordDOList.stream()
+                .map(winningRecordDO -> {
+                    WinningRecordDTO winningRecordDTO = new WinningRecordDTO();
+                    winningRecordDTO.setWinnerId(winningRecordDO.getWinnerId());
+                    winningRecordDTO.setWinnerName(winningRecordDO.getWinnerName());
+                    winningRecordDTO.setPrizeName(winningRecordDO.getPrizeName());
+                    winningRecordDTO.setPrizeTier(ActivityPrizeTiersStatusEnum.
+                            forName(winningRecordDO.getPrizeTier()));
+                    winningRecordDTO.setWinningTime(winningRecordDO.getWinnerTime());
+                    return winningRecordDTO;
+                }).collect(Collectors.toList());
     }
 
     /**
