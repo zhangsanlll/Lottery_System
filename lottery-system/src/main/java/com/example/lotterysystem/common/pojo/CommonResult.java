@@ -37,11 +37,14 @@ public class CommonResult<T> {
         return result;
     }
 
-    /*
-    将传入的result对象，转换成另一个泛型结果的对象
-    <T> 返回的泛型
-    @return 新的CommonResult对象
-    * */
+
+    /**
+     * 将传入的result对象，转换成另一个泛型结果的对象
+     *     <T> 返回的泛型
+     * @param errorCode
+     * @return 新的CommonResult对象
+     * @param <T>
+     */
     public static <T> CommonResult<T> error(ErrorCode errorCode) {
     return error(errorCode.getCode(),errorCode.getMsg());
     }

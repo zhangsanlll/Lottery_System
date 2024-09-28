@@ -53,6 +53,7 @@ public class UserServiceImpl implements UserService {
         checkRegisterInfo(request);
 
         //加密私密数据（构造dao层请求）
+        //先构造一个能够接受所有参数的对象userDO,然后再从后端中获取出来进行校验
         UserDO userDO = new UserDO();
         userDO.setUserName(request.getName());
         userDO.setEmail(request.getMail());

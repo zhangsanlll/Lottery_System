@@ -27,6 +27,26 @@ public class DrawPrizeTest {
     private ActivityStatusManager activityStatusManager;
     @Test
     void drawPrize(){
+        /*DrawPrizeParam param = new DrawPrizeParam();
+        param.setActivityId(8L);
+        param.setPrizeId(1L);
+        param.setPrizeTiers("FIRST_PRIZE");
+        param.setWinningTime(new Date());
+        List<DrawPrizeParam.Winner> winnerList = new ArrayList<>();
+        DrawPrizeParam.Winner winner = new DrawPrizeParam.Winner();
+        winner.setUserId(1L);
+        winner.setUserName("lll");
+        winnerList.add(winner);
+        param.setWinnerList(winnerList);
+        drawPrizeService.drawPrize(param);*/
+
+
+        /**
+         * 需要测试以下几个方面：
+         * 1.正向流程
+         * 2.处理过程中发生异常的话进行回滚
+         * 3.处理过程中发生异常：消息堆积->处理异常-> 消息重发
+         */
         DrawPrizeParam param = new DrawPrizeParam();
         param.setActivityId(8L);
         param.setPrizeId(1L);

@@ -332,6 +332,7 @@
 
     // showList函数用于显示静态的文字列表。它设置奖品信息，隐藏图片，显示列表，并将data.list中的数据添加到列表中。
     function showList(data) {
+        console.log(data);
         disc.innerHTML = data.prizeTierName + ' ' + data.name + ' ' + data.prizeAmount + '份'
         image.style.display = 'none'
         list.style.display = 'block'
