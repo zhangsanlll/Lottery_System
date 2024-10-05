@@ -20,6 +20,6 @@ public class ShowWinningRecordsParam implements Serializable {
      *
      *奖品id
      */
-    @NotNull(message = "奖品id不能为空")
+    //@NotNull(message = "奖品id不能为空")
     private Long prizeId;
 }

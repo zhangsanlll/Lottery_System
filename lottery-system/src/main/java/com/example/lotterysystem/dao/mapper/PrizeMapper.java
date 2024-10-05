@@ -41,6 +41,6 @@ public interface PrizeMapper {
             " </script>")
     List<PrizeDO> batchSelectByIds(@Param("items")List<Long> prizeIds);
 
-    @Select("select * from prize where id = #{activityId}")
-    PrizeDO selectById(@Param("items")Long prizeId);
+    @Select("select * from prize where id = #{id}")
+    PrizeDO selectById(@Param("id")Long id);
 }

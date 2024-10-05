@@ -65,7 +65,7 @@ public class GetActivityDetailResult implements Serializable {
         /**
          * 奖品数量
          */
-        private Long priceAmount;
+        private Long prizeAmount;
         /**
          * 奖品是否有效
          */

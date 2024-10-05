@@ -23,12 +23,12 @@ public interface ActivityMapper {
     List<ActivityDO> selectActivityList(@Param("offset") Integer offset,
                                         @Param("pageSize") Integer pageSize);
 
-    @Select("select * from activity where id = #{activityId}")
-    ActivityDO selectById(@Param("activityId") Long activityId);
+    @Select("select * from activity where id = #{id}")
+    ActivityDO selectById(@Param("id") Long id);
 
 
-    @Update("update activity set status = #{status} where activity_id = #{activityId}")
-    void updateStatus(@Param("activityId")Long activityId,
+    @Update("update activity set status = #{status} where id = #{id}")
+    void updateStatus(@Param("id")Long id,
                       @Param("status")String status);
 }
 

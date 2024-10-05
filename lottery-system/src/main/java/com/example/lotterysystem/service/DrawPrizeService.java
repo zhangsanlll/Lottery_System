@@ -17,6 +17,7 @@ public interface DrawPrizeService {
 
     /**
      * 校验抽奖请求
+     *
      * @param param
      */
     Boolean checkDrawPrizeParam(DrawPrizeParam param);

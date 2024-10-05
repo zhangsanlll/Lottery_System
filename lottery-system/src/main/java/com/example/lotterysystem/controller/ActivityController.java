@@ -83,7 +83,7 @@ public class ActivityController {
                             prize.setPrice(prizeDTO.getPrice());
                             prize.setDescription(prizeDTO.getDescription());
                             prize.setPrizeTierName(prizeDTO.getTiers().getMessage());
-                            prize.setPriceAmount(prizeDTO.getPrizeAmount());
+                            prize.setPrizeAmount(prizeDTO.getPrizeAmount());
                             prize.setValid(prizeDTO.valid());
                             return prize;
                         }).collect(Collectors.toList())

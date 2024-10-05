@@ -77,7 +77,8 @@ public class MqReceiver {
             if(!drawPrizeService.checkDrawPrizeParam(param)){
                 return ;
             }
-            //状态扭转处理(十分重要，会加入设计模式)
+
+            //状态扭转处理(加入设计模式)
             statusConvert(param);
 
             //保存中奖者名单

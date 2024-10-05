@@ -5,7 +5,6 @@ import com.example.lotterysystem.common.utils.JacksonUtil;
 import com.example.lotterysystem.common.utils.RedisUtil;
 import com.example.lotterysystem.controller.param.DrawPrizeParam;
 import com.example.lotterysystem.controller.param.ShowWinningRecordsParam;
-import com.example.lotterysystem.controller.result.WinningRecordResult;
 import com.example.lotterysystem.dao.dataobject.*;
 import com.example.lotterysystem.dao.mapper.*;
 import com.example.lotterysystem.service.DrawPrizeService;
@@ -67,6 +66,7 @@ public class DrawPrizeServiceImpl implements DrawPrizeService {
 
     /**
      * 校验抽奖参数请求
+     *
      * @param param
      */
     @Override
