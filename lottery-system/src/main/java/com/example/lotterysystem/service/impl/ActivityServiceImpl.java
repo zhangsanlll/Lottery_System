@@ -244,7 +244,7 @@ public class ActivityServiceImpl implements ActivityService {
                 logger.info("获取的缓存活动数据为空！ key = {}",ACTIVITY_PREFIX+activityId);
                 return null;
             }
-            return JacksonUtil.readListValue(str,ActivityDetailDTO.class);
+            return JacksonUtil.readValue(str,ActivityDetailDTO.class);
         }catch (Exception e){
             logger.error("从缓存中获取活动信息异常,key={}",ACTIVITY_PREFIX+activityId,e);
             return null;

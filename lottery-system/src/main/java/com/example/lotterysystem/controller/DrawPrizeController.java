@@ -41,6 +41,11 @@ public class DrawPrizeController {
         return CommonResult.success(true);
     }
 
+    /**
+     * 展示获奖列表
+     * @param param
+     * @return
+     */
     @RequestMapping("/winning-records/show")
     public CommonResult<List<WinningRecordResult>> showWinningRecords
             (@RequestBody @Validated ShowWinningRecordsParam param){

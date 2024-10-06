@@ -136,7 +136,7 @@ public class DrawPrizeServiceImpl implements DrawPrizeService {
                     winningRecordDO.setWinnerId(userDO.getId());
                     winningRecordDO.setWinnerName(userDO.getUserName());
                     winningRecordDO.setWinnerPhoneNumber(userDO.getPhoneNumber());
-                    winningRecordDO.setWinnerTime(param.getWinningTime());
+                    winningRecordDO.setWinningTime(param.getWinningTime());
                     return winningRecordDO;
                 }).collect(Collectors.toList());
         winningRecordMapper.batchInsert(winningRecordDOList);
@@ -210,7 +210,7 @@ public class DrawPrizeServiceImpl implements DrawPrizeService {
                     winningRecordDTO.setPrizeName(winningRecordDO.getPrizeName());
                     winningRecordDTO.setPrizeTier(ActivityPrizeTiersStatusEnum.
                             forName(winningRecordDO.getPrizeTier()));
-                    winningRecordDTO.setWinningTime(winningRecordDO.getWinnerTime());
+                    winningRecordDTO.setWinningTime(winningRecordDO.getWinningTime());
                     return winningRecordDTO;
                 }).collect(Collectors.toList());
     }

@@ -63,7 +63,7 @@ public class MqReceiver {
         logger.info("MQ成功接收到消息，message:{}",
                 JacksonUtil.writeValueAsString(message));
         String paramString = message.get("messageData");
-        DrawPrizeParam param = JacksonUtil.readListValue(paramString,DrawPrizeParam.class);
+        DrawPrizeParam param = JacksonUtil.readValue(paramString,DrawPrizeParam.class);
         // 处理抽奖的流程
         try{
             //校验抽奖请求是否有效
@@ -214,7 +214,7 @@ public class MqReceiver {
             String context = "Hi,"+winningRecordDO.getWinnerName()+".恭喜你在"
                     +winningRecordDO.getActivityName()+"活动中获得"+
                     ActivityPrizeTiersStatusEnum.forName(winningRecordDO.getPrizeTier()).getMessage()+
-                    ":"+winningRecordDO.getPrizeName()+".获奖时间为"+ DateUtil.formatTime(winningRecordDO.getWinnerTime()) +
+                    ":"+winningRecordDO.getPrizeName()+".获奖时间为"+ DateUtil.formatTime(winningRecordDO.getWinningTime()) +
                     ",请尽快领取您的奖励！";
             mailUtil.sendSampleMail(winningRecordDO.getWinnerEmail(),"中奖通知",context);
         }
@@ -236,25 +236,37 @@ public class MqReceiver {
             map.put("activityName",winningRecordDO.getActivityName());
             map.put("prizeTiers",ActivityPrizeTiersStatusEnum.forName(winningRecordDO.getPrizeTier()).getMessage());
             map.put("prizeName",winningRecordDO.getPrizeName());
-            map.put("winningTime",DateUtil.formatTime(winningRecordDO.getWinnerTime()));
+            map.put("winningTime",DateUtil.formatTime(winningRecordDO.getWinningTime()));
             smsUtil.sendMessage("SMS_472470255",winningRecordDO.getWinnerPhoneNumber().getValue(),
                     JacksonUtil.writeValueAsString(map));
         }
     }
 
-    private boolean statusConvert(DrawPrizeParam param) {
+    private void statusConvert(DrawPrizeParam param) {
         // 判断活动+奖品+人员表相关状态是否已经扭转（正常思路）
         // 扭转状态时，保证了事务一致性，要么都扭转了，要么都没扭转（不包含活动）：
         // 因此，只用判断人员/奖品是否扭转过，就能判断出状态是否全部扭转
         // 不能判断活动是否已经扭转
         // 结论：判断奖品状态是否扭转，就能判断出全部状态是否扭转
-        ActivityPrizeDO aPDO = activityPrizeMapper.selectByAPId(param.getActivityId(), param.getPrizeId());
+        /*ActivityPrizeDO aPDO = activityPrizeMapper.selectByAPId(param.getActivityId(), param.getPrizeId());
         //已经扭转了，需要回滚
         return aPDO.getStatus()
-                .equalsIgnoreCase(ActivityPrizeStatusEnum.COMPLETED.name());
+                .equalsIgnoreCase(ActivityPrizeStatusEnum.COMPLETED.name());*/
+        ConvertActivityStatusDTO convertActivityStatusDTO = new ConvertActivityStatusDTO();
+        convertActivityStatusDTO.setActivityId(param.getActivityId());
+        convertActivityStatusDTO.setTargetActivityStatus(ActivityStatusEnum.COMPLETED);
+        convertActivityStatusDTO.setPrizeId(param.getPrizeId());
+        convertActivityStatusDTO.setTargetPrizeStatus(ActivityPrizeStatusEnum.COMPLETED);
+        convertActivityStatusDTO.setUserId(
+                param.getWinnerList().stream()
+                        .map(DrawPrizeParam.Winner::getUserId)
+                        .collect(Collectors.toList())
+        );
+        convertActivityStatusDTO.setTargetUserStatus(ActivityUserStatusEnum.COMPLETED);
+        activityStatusManager.handlerEvent(convertActivityStatusDTO);
+
     }
 
-//    private void statusConvert(DrawPrizeParam param) {
 //
 //        // 问题：
 //        // 1、活动状态扭转有依赖性，导致代码维护性差
