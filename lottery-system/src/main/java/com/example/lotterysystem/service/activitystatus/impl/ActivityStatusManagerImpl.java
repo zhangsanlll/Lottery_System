@@ -81,7 +81,7 @@ public class ActivityStatusManagerImpl implements ActivityStatusManager {
         Iterator<Map.Entry<String,AbstractActivityOperator>> iterator = currentMap.entrySet().iterator();
         while(iterator.hasNext()){
             AbstractActivityOperator operator = iterator.next().getValue();
-            //Operator石是否需要转换
+            //Operator是否需要转换
             if(operator.sequence() != sequence
             || ! operator.needConvert(convertActivityStatusDTO)){
                 continue;

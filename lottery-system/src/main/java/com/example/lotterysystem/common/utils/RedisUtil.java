@@ -70,7 +70,8 @@ public class RedisUtil {
     public String get(String key){
         try{
             return StringUtils.hasText(key)?
-                    stringRedisTemplate.opsForValue().get(key):null;
+                    stringRedisTemplate.opsForValue().get(key)
+                    :null;
 
         }catch (Exception e){
             logger.error("RedisUtil error,get:{}",key,e);

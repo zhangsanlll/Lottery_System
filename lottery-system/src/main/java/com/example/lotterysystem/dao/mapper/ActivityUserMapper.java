@@ -36,13 +36,12 @@ public interface ActivityUserMapper {
                                             @Param("userIds")List<Long> userIds);
 
     @Update("<script>" +
-            " update   activity_user " +
-            " set status = #{status}"+
-            "  where activity_id = #{activityId}" +
-            " and user_id in " +
-            " <foreach collection = 'userIds' item = 'userId' open='(' separator=',' close=')' >"+
-            " #{userIds}"+
-            " </foreach>"+
+            " update activity_user set status = #{status}" +
+            " where activity_id = #{activityId}" +
+            " and user_id in" +
+            " <foreach collection='userIds' item='userId' open='(' separator=',' close=')' >" +
+            " #{userId}" +
+            " </foreach>" +
             " </script>")
     void updateStatus(@Param("activityId")Long activityId,
                       @Param("userIds")List<Long> userIds,

@@ -269,6 +269,7 @@ public class DrawPrizeServiceImpl implements DrawPrizeService {
             }
 
             String str = redisUtil.get(WINNING_RECORDS_PREFIX+key);
+            System.out.println(str);
             if(!StringUtils.hasText(str)){
                 return Arrays.asList();
             }

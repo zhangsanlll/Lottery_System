@@ -5,6 +5,7 @@ import com.example.lotterysystem.dao.dataobject.ActivityUserDO;
 import com.example.lotterysystem.dao.mapper.ActivityUserMapper;
 import com.example.lotterysystem.service.dto.ConvertActivityStatusDTO;
 import com.example.lotterysystem.service.enums.ActivityPrizeStatusEnum;
+import com.example.lotterysystem.service.enums.ActivityUserStatusEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -51,11 +52,12 @@ public class UserOperator extends AbstractActivityOperator{
     public Boolean convert(ConvertActivityStatusDTO convertActivityStatusDTO) {
         Long activityId = convertActivityStatusDTO.getActivityId();
         List<Long> userIds = convertActivityStatusDTO.getUserId();
-        ActivityPrizeStatusEnum targetPrizeStatus = convertActivityStatusDTO.getTargetPrizeStatus();
+        ActivityUserStatusEnum targetUserStatus = convertActivityStatusDTO.getTargetUserStatus();
         try{
-            activityUserMapper.updateStatus(activityId,userIds,targetPrizeStatus.name());
+            activityUserMapper.updateStatus(activityId,userIds,targetUserStatus.name());
             return true;
         }catch (Exception e){
+            e.printStackTrace();
             return false;
         }
     }
