@@ -178,7 +178,7 @@ public class UserServiceImpl implements UserService {
 
         //校验登录信息
         if(null == userDO){
-            throw new ServiceException(ServiceErrorCodeConstants.MAIL_IS_EMPTY);
+            throw new ServiceException(ServiceErrorCodeConstants.USER_INFO_IS_EMPTY);
         } else if (StringUtils.hasText(loginParam.getMandatoryIdentity())
         && !loginParam.getMandatoryIdentity().equalsIgnoreCase(userDO.getIdentity())) {
             //强制身份登录，身份校验不通过

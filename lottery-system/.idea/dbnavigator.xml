@@ -24,9 +24,7 @@
     <last-used-providers />
   </component>
   <component name="DBNavigator.Project.DatabaseFileManager">
-    <open-files>
-      <object connection-id="775b5785-bd19-4286-a8ba-ad58f8075ab7" object-ref="schemas/lottery_system/tables/activity_user" />
-    </open-files>
+    <open-files />
   </component>
   <component name="DBNavigator.Project.DatabaseSessionManager">
     <connection id="775b5785-bd19-4286-a8ba-ad58f8075ab7" />

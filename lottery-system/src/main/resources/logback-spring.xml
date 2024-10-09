@@ -55,7 +55,7 @@
             即，<File>的⽇志都是当天的。-->
             <File>${logback.logInfoDir}/info.log</File>
             <!--⾃定义过滤器，保证info.***.log中只打印INFO级别的⽇志,填写全限定路径-->
-            <filter class="com.example.lotterysystem.common.filter.InfoLevelFilter;"/>
+            <filter class="com.example.lotterysystem.common.filter.InfoLevelFilter"/>
             <!--滚动策略，按照时间滚动TimeBasedRollingPolicy-->
             <rollingPolicy
                     class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">

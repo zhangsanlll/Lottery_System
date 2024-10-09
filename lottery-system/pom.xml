@@ -31,19 +31,24 @@
 		<!-- 使用maven时是否选择跳过test来配置，即跳过自己写的测试方法-->
 		<maven.test.skip> true </maven.test.skip>
 	</properties>
+	<!--<profiles>
+		<profile>
+			<id>dev</id>
+			<properties>
+				<profile.name>dev</profile.name>
+			</properties>
+		</profile>
+		<profile>
+			<id>test</id>
+			<properties>
+				<profile.name>test</profile.name>
+			</properties>
+		</profile>
+	</profiles>-->
 	<dependencies>
-
-
-
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>org.springframework.boot</groupId>
-					<artifactId>spring-boot-starter-logging</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<!-- RabbitMQ -->
 		<dependency>
@@ -83,6 +88,7 @@
 		<dependency>
 			<groupId>org.mybatis.spring.boot</groupId>
 			<artifactId>mybatis-spring-boot-starter</artifactId>
+
 			<version>3.0.3</version>
 		</dependency>
 

@@ -11,8 +11,8 @@ public interface ServiceErrorCodeConstants {
     ErrorCode PASSWORD_FORMAT_ERROR = new ErrorCode(105,"密码至少6位！");
     ErrorCode MAIL_USED = new ErrorCode(106,"邮箱被使用过");
     ErrorCode MAIL_IS_EMPTY = new ErrorCode(107,"邮箱为空");
-    ErrorCode PHONE_USED = new ErrorCode(108,"手机号为空");
-    ErrorCode PHONE_IS_EMPTY = new ErrorCode(109,"手机号杯使用过");
+    ErrorCode PHONE_USED = new ErrorCode(108,"手机号杯使用过");
+    ErrorCode PHONE_IS_EMPTY = new ErrorCode(109,"手机号为空");
 
     ErrorCode LOGIN_INFO_NOT_EXIT = new ErrorCode(110,"登录信息不存在");
     ErrorCode USER_INFO_IS_EMPTY = new ErrorCode(111,"用户信息为空");
