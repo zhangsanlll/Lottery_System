@@ -10,7 +10,7 @@ import java.util.List;
 @Mapper
 public interface UserMapper {
 
-    @Select("select count(*) from user where email = #{email}")
+    @Select("select count(*) from user where email = #{email}") 
     int countByMail(@Param("email" ) String email);
 
 
